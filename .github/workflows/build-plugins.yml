@@ -1,0 +1,145 @@
+name: Build Photo Synth Plugin
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  build-macos:
+    name: macOS Build (VST3 + AU)
+    runs-on: macos-latest
+    
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+      with:
+        submodules: recursive
+    
+    - name: Install CMake
+      run: brew install cmake
+    
+    - name: Configure CMake
+      run: cmake -B Builds -G Xcode -DCMAKE_BUILD_TYPE=Release
+    
+    - name: Build Plugin
+      run: cmake --build Builds --config Release --parallel 4
+    
+    - name: List Build Artifacts
+      run: |
+        echo "=== Searching for built plugins ==="
+        find Builds -name "*.vst3" -o -name "*.component" -o -name "*.app" | head -20
+        echo "=== PhotoSynth artefacts ==="
+        ls -lR Builds/PhotoSynth_artefacts/ || echo "No artefacts dir"
+    
+    - name: Package Plugins (macOS)
+      run: |
+        mkdir -p PhotoSynth-macOS
+        # Try multiple possible locations
+        if [ -d "Builds/PhotoSynth_artefacts/Release/VST3/PhotoSynth.vst3" ]; then
+          cp -R "Builds/PhotoSynth_artefacts/Release/VST3/PhotoSynth.vst3" PhotoSynth-macOS/
+        fi
+        if [ -d "Builds/PhotoSynth_artefacts/Release/AU/PhotoSynth.component" ]; then
+          cp -R "Builds/PhotoSynth_artefacts/Release/AU/PhotoSynth.component" PhotoSynth-macOS/
+        fi
+        if [ -d "Builds/PhotoSynth_artefacts/Release/Standalone/PhotoSynth.app" ]; then
+          cp -R "Builds/PhotoSynth_artefacts/Release/Standalone/PhotoSynth.app" PhotoSynth-macOS/
+        fi
+        # Fallback: search entire Builds directory
+        find Builds -name "PhotoSynth.vst3" -exec cp -R {} PhotoSynth-macOS/ \; 2>/dev/null || true
+        find Builds -name "PhotoSynth.component" -exec cp -R {} PhotoSynth-macOS/ \; 2>/dev/null || true
+        ls -la PhotoSynth-macOS/
+    
+    - name: Upload macOS Plugins
+      uses: actions/upload-artifact@v4
+      with:
+        name: PhotoSynth-macOS
+        path: PhotoSynth-macOS/
+        if-no-files-found: warn
+
+  build-windows:
+    name: Windows Build (VST3)
+    runs-on: windows-latest
+    
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+      with:
+        submodules: recursive
+    
+    - name: Configure CMake
+      run: cmake -B Builds -G "Visual Studio 17 2022" -A x64
+    
+    - name: Build Plugin
+      run: cmake --build Builds --config Release --parallel 4
+    
+    - name: List Build Artifacts
+      shell: bash
+      run: |
+        echo "=== Searching for built plugins ==="
+        find Builds -name "*.vst3" -o -name "*.exe" | head -20
+        echo "=== PhotoSynth artefacts ==="
+        ls -lR Builds/PhotoSynth_artefacts/ || echo "No artefacts dir"
+    
+    - name: Package Plugins (Windows)
+      shell: bash
+      run: |
+        mkdir -p PhotoSynth-Windows
+        # Try multiple possible locations
+        if [ -d "Builds/PhotoSynth_artefacts/Release/VST3/PhotoSynth.vst3" ]; then
+          cp -R "Builds/PhotoSynth_artefacts/Release/VST3/PhotoSynth.vst3" PhotoSynth-Windows/
+        fi
+        if [ -f "Builds/PhotoSynth_artefacts/Release/Standalone/PhotoSynth.exe" ]; then
+          cp "Builds/PhotoSynth_artefacts/Release/Standalone/PhotoSynth.exe" PhotoSynth-Windows/
+        fi
+        # Fallback: search entire Builds directory
+        find Builds -name "PhotoSynth.vst3" -exec cp -R {} PhotoSynth-Windows/ \; 2>/dev/null || true
+        ls -la PhotoSynth-Windows/
+    
+    - name: Upload Windows Plugins
+      uses: actions/upload-artifact@v4
+      with:
+        name: PhotoSynth-Windows
+        path: PhotoSynth-Windows/
+        if-no-files-found: warn
+
+  build-linux:
+    name: Linux Build (VST3) - Testing Only
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+      with:
+        submodules: recursive
+    
+    - name: Install Dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y cmake g++ libasound2-dev libx11-dev libxext-dev libfreetype6-dev libwebkit2gtk-4.0-dev libglu1-mesa-dev
+    
+    - name: Configure CMake
+      run: cmake -B Builds -DCMAKE_BUILD_TYPE=Release
+    
+    - name: Build Plugin
+      run: cmake --build Builds --config Release --parallel 4
+    
+    - name: List Build Artifacts
+      run: |
+        echo "=== Searching for built plugins ==="
+        find Builds -name "*.vst3" -o -name "PhotoSynth" | head -20
+    
+    - name: Package Plugins (Linux)
+      run: |
+        mkdir -p PhotoSynth-Linux
+        find Builds -name "PhotoSynth.vst3" -exec cp -R {} PhotoSynth-Linux/ \; 2>/dev/null || true
+        ls -la PhotoSynth-Linux/ || echo "No plugins found"
+    
+    - name: Upload Linux Plugins
+      uses: actions/upload-artifact@v4
+      with:
+        name: PhotoSynth-Linux
+        path: PhotoSynth-Linux/
+        if-no-files-found: warn

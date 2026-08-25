@@ -1,0 +1,39 @@
+# Build directories
+Builds/
+build/
+cmake-build-*/
+CMakeFiles/
+CMakeCache.txt
+*.cmake
+!CMakeLists.txt
+
+# JUCE generated files
+*.jucer
+JuceLibraryCode/
+*.xcworkspace
+*.xcodeproj
+*.sln
+*.vcxproj*
+*.filters
+
+# Plugin binaries
+*.vst3
+*.component
+*.aaxplugin
+*.app
+*.dylib
+*.so
+*.dll
+*.exe
+
+# macOS
+.DS_Store
+
+# IDE
+.vscode/
+.idea/
+*.user
+*.suo
+
+# Downloaded JUCE
+_deps/
