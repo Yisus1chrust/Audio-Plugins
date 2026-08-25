@@ -22,7 +22,7 @@ jobs:
       run: brew install cmake
     
     - name: Configure CMake
-      run: cmake -B Builds -G Xcode -DCMAKE_BUILD_TYPE=Release -DCMAKE_XCODE_ATTRIBUTE_GCC_TREAT_WARNINGS_AS_ERRORS=NO -DCMAKE_CXX_FLAGS="-Wno-error=deprecated-declarations -Wno-deprecated-declarations"
+      run: cmake -B Builds -G Xcode -DCMAKE_BUILD_TYPE=Release -DCMAKE_XCODE_ATTRIBUTE_GCC_TREAT_WARNINGS_AS_ERRORS=NO -DCMAKE_CXX_FLAGS="-Wno-error=deprecated-declarations -Wno-deprecated-declarations" -DCMAKE_COMPILE_WARNING_AS_ERROR=OFF
     
     - name: Build Plugin
       run: cmake --build Builds --config Release --parallel 4
