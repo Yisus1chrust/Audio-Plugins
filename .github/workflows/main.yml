@@ -10,7 +10,7 @@ on:
 jobs:
   build-macos:
     name: macOS Build (VST3 + AU)
-    runs-on: macos-latest
+    runs-on: macos-14
     
     steps:
     - name: Checkout Code
@@ -22,7 +22,7 @@ jobs:
       run: brew install cmake
     
     - name: Configure CMake
-      run: cmake -B Builds -G Xcode -DCMAKE_BUILD_TYPE=Release -DCMAKE_XCODE_ATTRIBUTE_GCC_TREAT_WARNINGS_AS_ERRORS=NO -DCMAKE_CXX_FLAGS="-Wno-error=deprecated-declarations -Wno-deprecated-declarations" -DCMAKE_COMPILE_WARNING_AS_ERROR=OFF
+      run: cmake -B Builds -G Xcode -DCMAKE_BUILD_TYPE=Release
     
     - name: Build Plugin
       run: cmake --build Builds --config Release --parallel 4
@@ -37,7 +37,6 @@ jobs:
     - name: Package Plugins (macOS)
       run: |
         mkdir -p PhotoSynth-macOS
-        # Try multiple possible locations
         if [ -d "Builds/PhotoSynth_artefacts/Release/VST3/PhotoSynth.vst3" ]; then
           cp -R "Builds/PhotoSynth_artefacts/Release/VST3/PhotoSynth.vst3" PhotoSynth-macOS/
         fi
@@ -47,7 +46,6 @@ jobs:
         if [ -d "Builds/PhotoSynth_artefacts/Release/Standalone/PhotoSynth.app" ]; then
           cp -R "Builds/PhotoSynth_artefacts/Release/Standalone/PhotoSynth.app" PhotoSynth-macOS/
         fi
-        # Fallback: search entire Builds directory
         find Builds -name "PhotoSynth.vst3" -exec cp -R {} PhotoSynth-macOS/ \; 2>/dev/null || true
         find Builds -name "PhotoSynth.component" -exec cp -R {} PhotoSynth-macOS/ \; 2>/dev/null || true
         ls -la PhotoSynth-macOS/
@@ -87,14 +85,12 @@ jobs:
       shell: bash
       run: |
         mkdir -p PhotoSynth-Windows
-        # Try multiple possible locations
         if [ -d "Builds/PhotoSynth_artefacts/Release/VST3/PhotoSynth.vst3" ]; then
           cp -R "Builds/PhotoSynth_artefacts/Release/VST3/PhotoSynth.vst3" PhotoSynth-Windows/
         fi
         if [ -f "Builds/PhotoSynth_artefacts/Release/Standalone/PhotoSynth.exe" ]; then
           cp "Builds/PhotoSynth_artefacts/Release/Standalone/PhotoSynth.exe" PhotoSynth-Windows/
         fi
-        # Fallback: search entire Builds directory
         find Builds -name "PhotoSynth.vst3" -exec cp -R {} PhotoSynth-Windows/ \; 2>/dev/null || true
         ls -la PhotoSynth-Windows/
     
