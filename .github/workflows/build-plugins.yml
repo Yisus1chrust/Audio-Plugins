@@ -18,14 +18,12 @@ jobs:
       with:
         submodules: recursive
     
-    - name: Select Xcode Version
-      run: sudo xcode-select -s /Applications/Xcode.app/Contents/Developer
-    
     - name: Install CMake
       run: brew install cmake
     
+    # Bypass building JUCE helper tools that throw legacy macOS SDK errors
     - name: Configure CMake
-      run: cmake -B Builds -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Release
+      run: cmake -B Builds -DCMAKE_BUILD_TYPE=Release -DJUCE_BUILD_EXTRAS=OFF -DJUCE_BUILD_EXAMPLES=OFF
     
     - name: Build Plugin
       run: cmake --build Builds --config Release --parallel 4
@@ -89,7 +87,7 @@ jobs:
     - name: Install Dependencies
       run: |
         sudo apt-get update
-        sudo apt-get install -y cmake g++ libasound2-dev libx11-dev libxext-dev libfreetype6-dev libwebkit2gtk-4.0-dev libglu1-mesa-dev
+        sudo apt-get install -y cmake g++ libasound2-dev libx11-dev libxext-dev libfreetype6-dev libglu1-mesa-dev libwebkit2gtk-4.1-dev || sudo apt-get install -y libwebkit2gtk-4.0-dev
     
     - name: Configure CMake
       run: cmake -B Builds -DCMAKE_BUILD_TYPE=Release
