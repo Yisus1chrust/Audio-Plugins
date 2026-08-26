@@ -1,0 +1,34 @@
+# Build artifacts
+Builds/
+build/
+build_*/
+cmake-build-*/
+CMakeFiles/
+CMakeCache.txt
+
+# JUCE generated files
+*.jucer
+*.xcworkspace
+*.xcodeproj
+*.sln
+*.vcxproj*
+*.filters
+
+# Plugin binaries
+*.vst3
+*.component
+*.aaxplugin
+*.app
+*.dylib
+*.so
+*.dll
+
+# macOS
+.DS_Store
+
+# IDE
+.vscode/
+.idea/
+
+# Logs
+*.log
