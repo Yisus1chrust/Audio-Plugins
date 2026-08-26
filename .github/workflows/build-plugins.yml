@@ -21,9 +21,9 @@ jobs:
     - name: Install CMake
       run: brew install cmake
     
-    # Bypass building JUCE helper tools that throw legacy macOS SDK errors
+    # Bypass building JUCE helper tools and tool support that throw legacy macOS SDK errors
     - name: Configure CMake
-      run: cmake -B Builds -DCMAKE_BUILD_TYPE=Release -DJUCE_BUILD_EXTRAS=OFF -DJUCE_BUILD_EXAMPLES=OFF
+      run: cmake -B Builds -DCMAKE_BUILD_TYPE=Release -DJUCE_BUILD_EXTRAS=OFF -DJUCE_BUILD_EXAMPLES=OFF -DJUCE_TOOL_SUPPORT=OFF
     
     - name: Build Plugin
       run: cmake --build Builds --config Release --parallel 4
