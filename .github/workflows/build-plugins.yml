@@ -1,0 +1,75 @@
+name: Build Photo Synth Plugin
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  build-macos:
+    name: macOS Build (VST3 + AU)
+    runs-on: macos-latest
+    
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+      with:
+        submodules: recursive
+    
+    - name: Install CMake
+      run: brew install cmake
+    
+    - name: Configure CMake
+      run: cmake -B Builds -G Xcode -DCMAKE_BUILD_TYPE=Release
+    
+    - name: Build Plugin
+      run: cmake --build Builds --config Release --parallel 4
+    
+    - name: List Build Artifacts
+      run: |
+        echo "=== Searching for built plugins ==="
+        find Builds -name "*.vst3" -o -name "*.component" -o -name "*.app" | head -20
+    
+    - name: Package Plugins
+      run: |
+        mkdir -p artifacts
+        find Builds -name "*.vst3" -exec cp -R {} artifacts/ \;
+        find Builds -name "*.component" -exec cp -R {} artifacts/ \;
+        ls -la artifacts/
+    
+    - name: Upload Artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: PhotoSynth-macOS
+        path: artifacts/
+
+  build-windows:
+    name: Windows Build (VST3)
+    runs-on: windows-latest
+    
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+      with:
+        submodules: recursive
+    
+    - name: Configure CMake
+      run: cmake -B Builds -G "Visual Studio 17 2022" -A x64
+    
+    - name: Build Plugin
+      run: cmake --build Builds --config Release --parallel 4
+    
+    - name: Package Plugins
+      shell: bash
+      run: |
+        mkdir -p artifacts
+        find Builds -name "*.vst3" -exec cp -R {} artifacts/ \;
+        ls -la artifacts/
+    
+    - name: Upload Artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: PhotoSynth-Windows
+        path: artifacts/
