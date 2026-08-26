@@ -6,6 +6,11 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
+# Disable unwanted JUCE modules/extras globally to prevent macOS SDK compilation errors
+set(JUCE_BUILD_EXTRAS OFF CACHE BOOL "" FORCE)
+set(JUCE_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
+set(JUCE_TOOL_SUPPORT OFF CACHE BOOL "" FORCE)
+
 # JUCE 7.x - provide JUCE via:
 # 1) -DJUCE_DIR=/path/to/JUCE or
 # 2) git submodule in ./JUCE or
@@ -72,6 +77,11 @@ target_compile_definitions(PhotoSynth
         JUCE_VST3_CAN_REPLACE_VST2=0
 )
 
+# Suppress deprecation errors on macOS compilers
+if(APPLE)
+    target_compile_options(PhotoSynth PRIVATE "-Wno-error=deprecated-declarations")
+endif()
+
 target_link_libraries(PhotoSynth
     PRIVATE
         juce::juce_audio_utils
@@ -83,4 +93,3 @@ target_link_libraries(PhotoSynth
         juce::juce_recommended_lto_flags
         juce::juce_recommended_warning_flags
 )
-
