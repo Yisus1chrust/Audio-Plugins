@@ -21,19 +21,11 @@ elseif(PHOTO_SYNTH_FETCH_JUCE)
     FetchContent_Declare(
         JUCE
         GIT_REPOSITORY https://github.com/juce-framework/JUCE.git
-        GIT_TAG 8.0.8
+        GIT_TAG 7.0.12
     )
     FetchContent_MakeAvailable(JUCE)
 else()
     message(FATAL_ERROR "JUCE not found. Add JUCE as submodule at ./JUCE or pass -DJUCE_DIR=/path/to/JUCE")
-endif()
-
-if(APPLE)
-    set(PHOTO_SYNTH_PLUGIN_FORMATS VST3 AU Standalone)
-elseif(WIN32)
-    set(PHOTO_SYNTH_PLUGIN_FORMATS VST3 Standalone)
-else()
-    set(PHOTO_SYNTH_PLUGIN_FORMATS VST3 Standalone)
 endif()
 
 juce_add_plugin(PhotoSynth
@@ -47,7 +39,7 @@ juce_add_plugin(PhotoSynth
     EDITOR_WANTS_KEYBOARD_FOCUS TRUE
     PLUGIN_MANUFACTURER_CODE Mstl
     PLUGIN_CODE PhSy
-    FORMATS ${PHOTO_SYNTH_PLUGIN_FORMATS}
+    FORMATS VST3 AU Standalone
     PRODUCT_NAME "Photo Synth"
 )
 
@@ -78,7 +70,6 @@ target_compile_definitions(PhotoSynth
         JUCE_WEB_BROWSER=0
         JUCE_USE_CURL=0
         JUCE_VST3_CAN_REPLACE_VST2=0
-        JUCE_USE_ACCESSIBILITY=0
 )
 
 target_link_libraries(PhotoSynth
@@ -92,3 +83,4 @@ target_link_libraries(PhotoSynth
         juce::juce_recommended_lto_flags
         juce::juce_recommended_warning_flags
 )
+
