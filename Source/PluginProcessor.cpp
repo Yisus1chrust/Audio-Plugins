@@ -59,13 +59,6 @@ namespace photosynth
         p.push_back(std::make_unique<APF>(juce::ParameterID{"reverbMix", 1}, "Reverb Mix", juce::NormalisableRange<float>(0.0f, 1.0f, 0.001f), 0.35f));
         p.push_back(std::make_unique<APF>(juce::ParameterID{"delayMix", 1}, "Delay Mix", juce::NormalisableRange<float>(0.0f, 1.0f, 0.001f), 0.25f));
 
-        // Demo parity controls
-        p.push_back(std::make_unique<APF>(juce::ParameterID{"morphAmount", 1}, "Morph Amount", juce::NormalisableRange<float>(0.0f, 1.0f, 0.001f), 0.0f));
-        p.push_back(std::make_unique<APF>(juce::ParameterID{"bpm", 1}, "BPM", juce::NormalisableRange<float>(40.0f, 220.0f, 0.01f), 120.0f));
-        p.push_back(std::make_unique<APB>(juce::ParameterID{"tempoSync", 1}, "Tempo Sync", true));
-        p.push_back(std::make_unique<APF>(juce::ParameterID{"lfoSyncMultiplier", 1}, "LFO Sync Multiplier", juce::NormalisableRange<float>(0.125f, 8.0f, 0.001f), 1.0f));
-        p.push_back(std::make_unique<APF>(juce::ParameterID{"delaySyncDivision", 1}, "Delay Sync Division", juce::NormalisableRange<float>(0.125f, 2.0f, 0.001f), 0.5f));
-
         auto addFx = [&p](const juce::String& idPrefix)
         {
             p.push_back(std::make_unique<APB>(juce::ParameterID{ idPrefix + "Enabled", 1 }, idPrefix + " Enabled", true));
@@ -119,81 +112,6 @@ namespace photosynth
     }
 
     void PhotoSynthAudioProcessor::releaseResources() {}
-
-    void PhotoSynthAudioProcessor::setParameterValue(const char* id, float value)
-    {
-        if (auto* param = apvts.getParameter(id))
-            param->setValueNotifyingHost(param->convertTo0to1(value));
-    }
-
-    void PhotoSynthAudioProcessor::applyPatchToParameters(const PatchParameters& patch, const ImageMetrics* metrics)
-    {
-        setParameterValue("cutoffOffset", patch.cutoffOffset);
-        setParameterValue("resonance", patch.resonance);
-        setParameterValue("lfoRate", patch.lfoRate);
-        setParameterValue("lfoDepth", patch.lfoDepth);
-
-        setParameterValue("masterVolume", patch.masterVolume);
-        setParameterValue("attackTime", patch.attackTime);
-        setParameterValue("decayTime", patch.decayTime);
-        setParameterValue("sustainLevel", patch.sustainLevel);
-        setParameterValue("releaseTime", patch.releaseTime);
-        setParameterValue("threshold", patch.threshold);
-
-        setParameterValue("detuneCents", patch.detuneCents);
-        setParameterValue("unisonVoices", (float) patch.unisonVoices);
-        setParameterValue("fmRatio", patch.fmRatio);
-        setParameterValue("fmAmount", patch.fmAmount);
-        setParameterValue("subOscLevel", patch.subOscLevel);
-        setParameterValue("reverbMix", patch.reverbMix);
-        setParameterValue("delayMix", patch.delayMix);
-
-        setParameterValue("delayIntensity", patch.effects.delay.intensity);
-        setParameterValue("delayParam1", patch.effects.delay.param1);
-        setParameterValue("delayParam2", patch.effects.delay.param2);
-        setParameterValue("reverbIntensity", patch.effects.reverb.intensity);
-        setParameterValue("reverbParam1", patch.effects.reverb.param1);
-        setParameterValue("reverbParam2", patch.effects.reverb.param2);
-        setParameterValue("chorusIntensity", patch.effects.chorus.intensity);
-        setParameterValue("chorusParam1", patch.effects.chorus.param1);
-        setParameterValue("chorusParam2", patch.effects.chorus.param2);
-        setParameterValue("phaserIntensity", patch.effects.phaser.intensity);
-        setParameterValue("phaserParam1", patch.effects.phaser.param1);
-        setParameterValue("phaserParam2", patch.effects.phaser.param2);
-        setParameterValue("flangerIntensity", patch.effects.flanger.intensity);
-        setParameterValue("flangerParam1", patch.effects.flanger.param1);
-        setParameterValue("flangerParam2", patch.effects.flanger.param2);
-        setParameterValue("distortionIntensity", patch.effects.distortion.intensity);
-        setParameterValue("distortionParam1", patch.effects.distortion.param1);
-        setParameterValue("distortionParam2", patch.effects.distortion.param2);
-
-        setParameterValue("delayEnabled", patch.effects.delay.enabled ? 1.0f : 0.0f);
-        setParameterValue("reverbEnabled", patch.effects.reverb.enabled ? 1.0f : 0.0f);
-        setParameterValue("chorusEnabled", patch.effects.chorus.enabled ? 1.0f : 0.0f);
-        setParameterValue("phaserEnabled", patch.effects.phaser.enabled ? 1.0f : 0.0f);
-        setParameterValue("flangerEnabled", patch.effects.flanger.enabled ? 1.0f : 0.0f);
-        setParameterValue("distortionEnabled", patch.effects.distortion.enabled ? 1.0f : 0.0f);
-
-        setParameterValue("temporalEraVal", patch.temporalEraVal);
-        setParameterValue("opticalFocusDepth", patch.opticalFocusDepth);
-        setParameterValue("gridSymmetryDensity", patch.gridSymmetryDensity);
-        setParameterValue("lightAzimuthAngle", patch.lightAzimuthAngle);
-        setParameterValue("lightElevationAngle", patch.lightElevationAngle);
-        setParameterValue("chromaticClash", patch.chromaticClash);
-        setParameterValue("semanticDensityWeight", patch.semanticDensityWeight);
-
-        setParameterValue("bodyDamping", patch.physicalModel.bodyDamping);
-        setParameterValue("acousticWeight", patch.physicalModel.acousticWeight);
-        setParameterValue("tapeFlutterSpeed", patch.physicalModel.tapeFlutterSpeed);
-        setParameterValue("tapeFlutterDepth", patch.physicalModel.tapeFlutterDepth);
-        setParameterValue("analogSaturationWarmth", patch.physicalModel.analogSaturationWarmth);
-
-        if (auto* engineParam = apvts.getParameter("engineType"))
-            engineParam->setValueNotifyingHost(engineParam->convertTo0to1((float) patch.engineType));
-
-        if (metrics != nullptr)
-            currentMetrics = *metrics;
-    }
 
     void PhotoSynthAudioProcessor::updatePatchFromParameters()
     {
@@ -250,18 +168,6 @@ namespace photosynth
         currentPatch.physicalModel.tapeFlutterDepth = getF("tapeFlutterDepth");
         currentPatch.physicalModel.analogSaturationWarmth = getF("analogSaturationWarmth");
 
-        // BPM / sync behavior
-        const float bpm = getF("bpm");
-        const bool tempoSync = getF("tempoSync") > 0.5f;
-        const float lfoSyncMultiplier = getF("lfoSyncMultiplier");
-        const float delaySyncDivision = getF("delaySyncDivision");
-
-        if (tempoSync)
-        {
-            currentPatch.lfoRate = juce::jlimit(0.1f, 20.0f, (bpm / 60.0f) * lfoSyncMultiplier);
-            currentPatch.effects.delay.param1 = juce::jmap(delaySyncDivision, 0.125f, 2.0f, 0.05f, 0.95f);
-        }
-
         synthEngine.setPatch(currentPatch);
         synthEngine.setMetrics(currentMetrics);
         physicalModeling.updateFromPatch(currentPatch, getSampleRate());
@@ -310,91 +216,47 @@ namespace photosynth
 
     void PhotoSynthAudioProcessor::loadImageFile(const juce::File& file)
     {
-        loadImageFileToSlot(file, true);
-    }
-
-    void PhotoSynthAudioProcessor::loadImageFileToSlot(const juce::File& file, bool slotA)
-    {
         auto img = juce::ImageFileFormat::loadFrom(file);
         if (img.isNull())
             return;
 
         const auto result = ImageAnalyzer::analyzeImage(img);
+        currentMetrics = result.first;
+        currentPatch = result.second;
 
+        auto setF = [this](const char* id, float value)
         {
-            const juce::ScopedLock sl(imageLock);
-            if (slotA)
-            {
-                imageA = img;
-                metricsA = result.first;
-                patchA = result.second;
-                hasLoadedImageA = true;
-            }
-            else
-            {
-                imageB = img;
-                metricsB = result.first;
-                patchB = result.second;
-                hasLoadedImageB = true;
-            }
-        }
-
-        if (hasLoadedImageA && hasLoadedImageB)
-            applyMorphFromLoadedImages(apvts.getRawParameterValue("morphAmount")->load());
-        else
-            applyPatchToParameters(result.second, &result.first);
-
-        updatePatchFromParameters();
-    }
-
-    void PhotoSynthAudioProcessor::applyMorphFromLoadedImages(float morphAmount)
-    {
-        if (!(hasLoadedImageA && hasLoadedImageB))
-            return;
-
-        const float t = juce::jlimit(0.0f, 1.0f, morphAmount);
-        const auto morphedPatch = MorphEngine::interpolatePatchParameters(patchA, patchB, t);
-        const auto morphedMetrics = MorphEngine::interpolateImageMetrics(metricsA, metricsB, t);
-
-        applyPatchToParameters(morphedPatch, &morphedMetrics);
-        updatePatchFromParameters();
-    }
-
-    juce::Image PhotoSynthAudioProcessor::getPreviewImage(int width, int height) const
-    {
-        const juce::ScopedLock sl(imageLock);
-
-        if (!hasLoadedImageA && !hasLoadedImageB)
-            return {};
-
-        auto fitted = [width, height](const juce::Image& src)
-        {
-            juce::Image out(juce::Image::ARGB, juce::jmax(2, width), juce::jmax(2, height), true);
-            juce::Graphics g(out);
-            g.fillAll(juce::Colours::transparentBlack);
-            g.drawImageWithin(src, 0, 0, out.getWidth(), out.getHeight(), juce::RectanglePlacement::centred | juce::RectanglePlacement::onlyReduceInSize, false);
-            return out;
+            if (auto* param = apvts.getParameter(id))
+                param->setValueNotifyingHost(param->convertTo0to1(value));
         };
 
-        if (hasLoadedImageA && !hasLoadedImageB)
-            return fitted(imageA);
-        if (!hasLoadedImageA && hasLoadedImageB)
-            return fitted(imageB);
+        setF("cutoffOffset", currentPatch.cutoffOffset);
+        setF("resonance", currentPatch.resonance);
+        setF("lfoRate", currentPatch.lfoRate);
+        setF("lfoDepth", currentPatch.lfoDepth);
+        setF("attackTime", currentPatch.attackTime);
+        setF("decayTime", currentPatch.decayTime);
+        setF("sustainLevel", currentPatch.sustainLevel);
+        setF("releaseTime", currentPatch.releaseTime);
+        setF("detuneCents", currentPatch.detuneCents);
+        setF("unisonVoices", (float) currentPatch.unisonVoices);
+        setF("fmRatio", currentPatch.fmRatio);
+        setF("fmAmount", currentPatch.fmAmount);
+        setF("subOscLevel", currentPatch.subOscLevel);
+        setF("reverbMix", currentPatch.reverbMix);
+        setF("delayMix", currentPatch.delayMix);
+        setF("temporalEraVal", currentPatch.temporalEraVal);
+        setF("opticalFocusDepth", currentPatch.opticalFocusDepth);
+        setF("gridSymmetryDensity", currentPatch.gridSymmetryDensity);
+        setF("lightAzimuthAngle", currentPatch.lightAzimuthAngle);
+        setF("lightElevationAngle", currentPatch.lightElevationAngle);
+        setF("chromaticClash", currentPatch.chromaticClash);
+        setF("semanticDensityWeight", currentPatch.semanticDensityWeight);
 
-        const float t = juce::jlimit(0.0f, 1.0f, apvts.getRawParameterValue("morphAmount")->load());
-        auto aImg = fitted(imageA);
-        auto bImg = fitted(imageB);
+        if (auto* engineParam = apvts.getParameter("engineType"))
+            engineParam->setValueNotifyingHost(engineParam->convertTo0to1((float) currentPatch.engineType));
 
-        juce::Image out(juce::Image::ARGB, juce::jmax(2, width), juce::jmax(2, height), true);
-        juce::Graphics g(out);
-        g.fillAll(juce::Colour(0xff0f1824));
-
-        g.setOpacity(1.0f - t);
-        g.drawImageAt(aImg, 0, 0);
-        g.setOpacity(t);
-        g.drawImageAt(bImg, 0, 0);
-
-        return out;
+        updatePatchFromParameters();
     }
 
     void PhotoSynthAudioProcessor::savePresetToFile(const juce::File& file)
@@ -402,8 +264,6 @@ namespace photosynth
         auto state = apvts.copyState();
         state.setProperty("imageHash", currentMetrics.hash64, nullptr);
         state.setProperty("seedNumber", (juce::int64) currentMetrics.seedNumber, nullptr);
-        state.setProperty("hasImageA", hasLoadedImageA, nullptr);
-        state.setProperty("hasImageB", hasLoadedImageB, nullptr);
 
         std::unique_ptr<juce::XmlElement> xml(state.createXml());
         if (xml != nullptr)

@@ -45,14 +45,7 @@ namespace photosynth
         juce::AudioProcessorValueTreeState apvts;
         juce::MidiKeyboardState& getKeyboardState() { return keyboardState; }
 
-        // Image workflow
-        void loadImageFile(const juce::File& file);            // backward compatible: loads slot A
-        void loadImageFileToSlot(const juce::File& file, bool slotA);
-        void applyMorphFromLoadedImages(float morphAmount);
-        juce::Image getPreviewImage(int width, int height) const;
-        bool hasImageA() const { return hasLoadedImageA; }
-        bool hasImageB() const { return hasLoadedImageB; }
-
+        void loadImageFile(const juce::File& file);
         const ImageMetrics& getMetrics() const { return currentMetrics; }
         const PatchParameters& getPatch() const { return currentPatch; }
 
@@ -78,25 +71,11 @@ namespace photosynth
 
         juce::MidiKeyboardState keyboardState;
 
-        // Two-image morph state
-        mutable juce::CriticalSection imageLock;
-        juce::Image imageA;
-        juce::Image imageB;
-        bool hasLoadedImageA = false;
-        bool hasLoadedImageB = false;
-        ImageMetrics metricsA;
-        ImageMetrics metricsB;
-        PatchParameters patchA;
-        PatchParameters patchB;
-
         ImageMetrics currentMetrics;
         PatchParameters currentPatch;
 
         void updatePatchFromParameters();
         void pushScope(const juce::AudioBuffer<float>& block);
-
-        void applyPatchToParameters(const PatchParameters& patch, const ImageMetrics* metrics = nullptr);
-        void setParameterValue(const char* id, float value);
 
         JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(PhotoSynthAudioProcessor)
     };
