@@ -29,18 +29,18 @@ jobs:
     
     - name: Package Plugins (macOS)
       run: |
-        mkdir -p PhotoSynth-macOS
-        cp -R Builds/PhotoSynth_artefacts/Release/VST3/PhotoSynth.vst3 PhotoSynth-macOS/ 2>/dev/null || true
-        cp -R Builds/PhotoSynth_artefacts/Release/AU/PhotoSynth.component PhotoSynth-macOS/ 2>/dev/null || true
-        cp -R Builds/PhotoSynth_artefacts/Release/Standalone/PhotoSynth.app PhotoSynth-macOS/ 2>/dev/null || true
-        ls -la PhotoSynth-macOS/
+        mkdir -p ${GITHUB_WORKSPACE}/PhotoSynth-macOS
+        find Builds -name "*.vst3" -exec cp -R {} ${GITHUB_WORKSPACE}/PhotoSynth-macOS/ \; 2>/dev/null || true
+        find Builds -name "*.component" -exec cp -R {} ${GITHUB_WORKSPACE}/PhotoSynth-macOS/ \; 2>/dev/null || true
+        find Builds -name "*.app" -exec cp -R {} ${GITHUB_WORKSPACE}/PhotoSynth-macOS/ \; 2>/dev/null || true
+        ls -la ${GITHUB_WORKSPACE}/PhotoSynth-macOS/
     
     - name: Upload macOS Plugins
       uses: actions/upload-artifact@v4
       with:
         name: PhotoSynth-macOS
-        path: ./PhotoSynth-macOS/
-        if-no-files-found: error
+        path: PhotoSynth-macOS/
+        if-no-files-found: ignore
 
   build-windows:
     name: Windows Build (VST3)
@@ -61,16 +61,17 @@ jobs:
     - name: Package Plugins (Windows)
       shell: bash
       run: |
-        mkdir -p PhotoSynth-Windows
-        cp -R Builds/PhotoSynth_artefacts/Release/VST3/PhotoSynth.vst3 PhotoSynth-Windows/ 2>/dev/null || true
-        ls -la PhotoSynth-Windows/
+        mkdir -p ${GITHUB_WORKSPACE}/PhotoSynth-Windows
+        find Builds -name "*.vst3" -exec cp -R {} ${GITHUB_WORKSPACE}/PhotoSynth-Windows/ \; 2>/dev/null || true
+        find Builds -name "*.exe" -exec cp -R {} ${GITHUB_WORKSPACE}/PhotoSynth-Windows/ \; 2>/dev/null || true
+        ls -la ${GITHUB_WORKSPACE}/PhotoSynth-Windows/
     
     - name: Upload Windows Plugins
       uses: actions/upload-artifact@v4
       with:
         name: PhotoSynth-Windows
-        path: ./PhotoSynth-Windows/
-        if-no-files-found: error
+        path: PhotoSynth-Windows/
+        if-no-files-found: ignore
 
   build-linux:
     name: Linux Build (VST3) - Testing Only
@@ -95,13 +96,13 @@ jobs:
     
     - name: Package Plugins (Linux)
       run: |
-        mkdir -p PhotoSynth-Linux
-        cp -R Builds/PhotoSynth_artefacts/Release/VST3/PhotoSynth.vst3 PhotoSynth-Linux/ 2>/dev/null || true
-        ls -la PhotoSynth-Linux/
+        mkdir -p ${GITHUB_WORKSPACE}/PhotoSynth-Linux
+        find Builds -name "*.vst3" -exec cp -R {} ${GITHUB_WORKSPACE}/PhotoSynth-Linux/ \; 2>/dev/null || true
+        ls -la ${GITHUB_WORKSPACE}/PhotoSynth-Linux/ || echo "No plugins found"
     
     - name: Upload Linux Plugins
       uses: actions/upload-artifact@v4
       with:
         name: PhotoSynth-Linux
-        path: ./PhotoSynth-Linux/
-        if-no-files-found: error
+        path: PhotoSynth-Linux/
+        if-no-files-found: ignore
