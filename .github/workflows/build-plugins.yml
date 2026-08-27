@@ -19,9 +19,9 @@ jobs:
         submodules: recursive
     
     - name: Install CMake
+    - name: Install CMake
       run: brew install cmake
     
-    # Fully purge old caches and disable all JUCE helper apps/tools on modern macOS SDKs
     - name: Configure CMake
       run: cmake -B Builds -DCMAKE_BUILD_TYPE=Release -DJUCE_BUILD_EXTRAS=OFF -DJUCE_BUILD_EXAMPLES=OFF -DJUCE_TOOL_SUPPORT=OFF -DJUCE_BUILD_HELPER_TOOLS=OFF --fresh
     
@@ -31,9 +31,9 @@ jobs:
     - name: Package Plugins (macOS)
       run: |
         mkdir -p PhotoSynth-macOS
-        find Builds -name "PhotoSynth.vst3" -exec cp -R {} PhotoSynth-macOS/ \; 2>/dev/null || true
-        find Builds -name "PhotoSynth.component" -exec cp -R {} PhotoSynth-macOS/ \; 2>/dev/null || true
-        find Builds -name "PhotoSynth.app" -exec cp -R {} PhotoSynth-macOS/ \; 2>/dev/null || true
+        cp -R Builds/PhotoSynth_artefacts/Release/VST3/PhotoSynth.vst3 PhotoSynth-macOS/ 2>/dev/null || true
+        cp -R Builds/PhotoSynth_artefacts/Release/AU/PhotoSynth.component PhotoSynth-macOS/ 2>/dev/null || true
+        cp -R Builds/PhotoSynth_artefacts/Release/Standalone/PhotoSynth.app PhotoSynth-macOS/ 2>/dev/null || true
         ls -la PhotoSynth-macOS/
     
     - name: Upload macOS Plugins
@@ -63,8 +63,8 @@ jobs:
       shell: bash
       run: |
         mkdir -p PhotoSynth-Windows
-        find Builds -name "PhotoSynth.vst3" -exec cp -R {} PhotoSynth-Windows/ \; 2>/dev/null || true
-        find Builds -name "PhotoSynth.exe" -exec cp {} PhotoSynth-Windows/ \; 2>/dev/null || true
+        cp -R Builds/PhotoSynth_artefacts/Release/VST3/PhotoSynth.vst3 PhotoSynth-Windows/ 2>/dev/null || true
+        cp -R Builds/PhotoSynth_artefacts/Release/Standalone/PhotoSynth.exe PhotoSynth-Windows/ 2>/dev/null || true
         ls -la PhotoSynth-Windows/
     
     - name: Upload Windows Plugins
@@ -98,7 +98,7 @@ jobs:
     - name: Package Plugins (Linux)
       run: |
         mkdir -p PhotoSynth-Linux
-        find Builds -name "PhotoSynth.vst3" -exec cp -R {} PhotoSynth-Linux/ \; 2>/dev/null || true
+        cp -R Builds/PhotoSynth_artefacts/Release/VST3/PhotoSynth.vst3 PhotoSynth-Linux/ 2>/dev/null || true
         ls -la PhotoSynth-Linux/ || echo "No plugins found"
     
     - name: Upload Linux Plugins
