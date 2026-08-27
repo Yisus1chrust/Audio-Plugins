@@ -39,8 +39,8 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: PhotoSynth-macOS
-        path: PhotoSynth-macOS/
-        if-no-files-found: warn
+        path: ./PhotoSynth-macOS/
+        if-no-files-found: error
 
   build-windows:
     name: Windows Build (VST3)
@@ -63,15 +63,14 @@ jobs:
       run: |
         mkdir -p PhotoSynth-Windows
         cp -R Builds/PhotoSynth_artefacts/Release/VST3/PhotoSynth.vst3 PhotoSynth-Windows/ 2>/dev/null || true
-        cp -R Builds/PhotoSynth_artefacts/Release/Standalone/PhotoSynth.exe PhotoSynth-Windows/ 2>/dev/null || true
         ls -la PhotoSynth-Windows/
     
     - name: Upload Windows Plugins
       uses: actions/upload-artifact@v4
       with:
         name: PhotoSynth-Windows
-        path: PhotoSynth-Windows/
-        if-no-files-found: warn
+        path: ./PhotoSynth-Windows/
+        if-no-files-found: error
 
   build-linux:
     name: Linux Build (VST3) - Testing Only
@@ -98,11 +97,11 @@ jobs:
       run: |
         mkdir -p PhotoSynth-Linux
         cp -R Builds/PhotoSynth_artefacts/Release/VST3/PhotoSynth.vst3 PhotoSynth-Linux/ 2>/dev/null || true
-        ls -la PhotoSynth-Linux/ || echo "No plugins found"
+        ls -la PhotoSynth-Linux/
     
     - name: Upload Linux Plugins
       uses: actions/upload-artifact@v4
       with:
         name: PhotoSynth-Linux
-        path: PhotoSynth-Linux/
-        if-no-files-found: warn
+        path: ./PhotoSynth-Linux/
+        if-no-files-found: error
