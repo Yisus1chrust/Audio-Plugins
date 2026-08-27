@@ -11,7 +11,7 @@ set(JUCE_BUILD_EXTRAS OFF CACHE BOOL "" FORCE)
 set(JUCE_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 set(JUCE_TOOL_SUPPORT OFF CACHE BOOL "" FORCE)
 
-# JUCE 7.x - provide JUCE via:
+# JUCE 8.x - provide JUCE via:
 # 1) -DJUCE_DIR=/path/to/JUCE or
 # 2) git submodule in ./JUCE or
 # 3) auto-fetch from GitHub (PHOTO_SYNTH_FETCH_JUCE=ON)
@@ -26,7 +26,7 @@ elseif(PHOTO_SYNTH_FETCH_JUCE)
     FetchContent_Declare(
         JUCE
         GIT_REPOSITORY https://github.com/juce-framework/JUCE.git
-        GIT_TAG 7.0.12
+        GIT_TAG 8.0.0
     )
     FetchContent_MakeAvailable(JUCE)
 else()
